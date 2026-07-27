@@ -3,7 +3,7 @@ CREATE TABLE locations (
 );
 CREATE TABLE addresses (
     id INT PRIMARY KEY,
-    street VARCHAR(128) NOT NULL,
+    street_name VARCHAR(96) NOT NULL,
     city VARCHAR(64) NOT NULL,
     state_province VARCHAR(64) NOT NULL,
     postal_code VARCHAR(9) NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE customers (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(64) NOT NULL,
     email VARCHAR(64) UNIQUE NOT NULL,
-    phone CHAR(10),
+    phone VARCHAR(10),
     address_id INT NOT NULL,
     FOREIGN KEY (address_id) REFERENCES addresses(id) ON UPDATE CASCADE
 );
@@ -74,17 +74,24 @@ CREATE TABLE services (
     delivery_time_estimate INT NOT NULL
 );
 
+CREATE TABLE package_types (
+    code VARCHAR(16) PRIMARY KEY,
+    name VARCHAR(64) NOT NULL
+);
+
 CREATE TABLE packages (
     tracking_no VARCHAR(32) PRIMARY KEY,
     customer_id INT NOT NULL,
     recipient_id INT NOT NULL,
-    type  VARCHAR(32) NOT NULL,
+    type_code VARCHAR(16) NOT NULL,
     weight DECIMAL(10,2) NOT NULL,
     service_code INT NOT NULL,
     is_hazard INT NOT NULL DEFAULT 0 CHECK (is_hazard IN (0, 1)),
     is_intl INT NOT NULL DEFAULT 0 CHECK (is_intl IN (0, 1)),
     payment_id INT NOT NULL,
+    shipped_at DATETIME NOT NULL,
     expected_delivery_date DATETIME NOT NULL,
+    FOREIGN KEY (type_code) REFERENCES package_types(code) ON UPDATE CASCADE,
     FOREIGN KEY (payment_id) REFERENCES payments(id) ON UPDATE CASCADE,
     FOREIGN KEY (customer_id) REFERENCES customers(id) ON UPDATE CASCADE,
     FOREIGN KEY (recipient_id) REFERENCES recipients(id) ON UPDATE CASCADE,
@@ -94,6 +101,7 @@ CREATE TABLE packages (
 CREATE TABLE customs_declarations (
     id INT AUTO_INCREMENT PRIMARY KEY,
     tracking_no VARCHAR(32) NOT NULL,
+    UNIQUE (tracking_no),
     origin_country CHAR(2) NOT NULL,
     destination_country CHAR(2) NOT NULL,
     total_value DECIMAL(10,2) NOT NULL,
@@ -105,6 +113,8 @@ CREATE TABLE customs_items (
     declaration_id INT NOT NULL,
     line_no VARCHAR(16) NOT NULL,
     item_value DECIMAL(10,2) NOT NULL,
+    description VARCHAR(128) NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
     FOREIGN KEY (declaration_id) REFERENCES customs_declarations(id) ON DELETE CASCADE
 );
 -- tracking
@@ -116,7 +126,7 @@ CREATE TABLE warehouses (
 );
 CREATE TABLE trucks (
     location_id INT PRIMARY KEY,
-    plate_no VARCHAR(10) NOT NULL,
+    truck_no INT UNIQUE NOT NULL,
     FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE CASCADE
 );
 CREATE TABLE planes (
@@ -130,7 +140,7 @@ CREATE TABLE tracking_events (
     tracking_no VARCHAR(32) NOT NULL,
     event_time DATETIME NOT NULL,
     location_id INT NOT NULL,
-    event_type  VARCHAR(32) NOT NULL,
+    event_type ENUM('PICKUP','DROPOFF','ARRIVE','DEPART','LOAD','UNLOAD','OUT_FOR_DELIVERY','DELIVERED','EXCEPTION') NOT NULL, -- Made it an enumerated type 4 specifics 
     FOREIGN KEY (tracking_no) REFERENCES packages(tracking_no) ON DELETE RESTRICT,
     FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE CASCADE
 );
