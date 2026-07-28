@@ -63,10 +63,10 @@ LIMIT 1;
 
 
 -- 4. Street with the most customers 
-SELECT a.street_name, a.city, a.state_province, COUNT(*) AS customers
+SELECT a.street, a.city, a.state_province, COUNT(*) AS customers
 FROM customers c
 JOIN addresses a ON a.id = c.address_id
-GROUP BY a.street_name, a.city, a.state_province
+GROUP BY a.street, a.city, a.state_province
 ORDER BY customers DESC
 LIMIT 1;
 
@@ -86,7 +86,7 @@ ORDER BY p.expected_delivery_date;
 
 --  6. Bills for the past month 
 SELECT c.name,
-       a.street_name,
+       a.street,
        a.city, a.state_province, a.postal_code,
        SUM(pay.amount) AS amount_owed
 FROM packages p
@@ -95,7 +95,7 @@ JOIN customers c  ON c.id   = pay.id
 JOIN addresses a  ON a.id   = c.address_id
 WHERE p.shipped_at >= '2026-06-01'
   AND p.shipped_at <  '2026-07-01'
-GROUP BY c.id, c.name, a.street_name,
+GROUP BY c.id, c.name, a.street,
          a.city, a.state_province, a.postal_code
 ORDER BY c.name;
 
