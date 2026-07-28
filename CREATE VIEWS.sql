@@ -22,14 +22,14 @@ JOIN payments pay ON pay.id = ac.payment_id
 JOIN packages p ON p.payment_id = pay.id
 JOIN services s ON s.id = p.service_code;
 
---simple bill: customer, address, amount owed
+-- simple bill: customer, address, amount owed
 CREATE VIEW v_simple_bill AS
 SELECT invoice_id, customer_name, street, city, state_province, postal_code,
        SUM(charge_amount) AS amount_owed
 FROM v_itemized_invoice
 GROUP BY invoice_id, customer_name, street, city, state_province, postal_code;
 
---bill by service type
+-- bill by service type
 CREATE VIEW v_bill_by_service AS
 SELECT invoice_id, customer_name, service_name,
        SUM(charge_amount) AS service_total

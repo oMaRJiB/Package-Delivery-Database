@@ -15,7 +15,7 @@ CREATE INDEX idx_te_pkg_time  ON tracking_events (tracking_no, event_time);
 CREATE INDEX idx_te_loc_time  ON tracking_events (location_id, event_time);
 CREATE INDEX idx_pkg_shipped  ON packages (customer_id, shipped_at);
 CREATE INDEX idx_pkg_expected ON packages (expected_delivery_date);
-CREATE INDEX idx_addr_street  ON addresses (home_number, street_name, city, state_province);
+CREATE INDEX idx_addr_street  ON addresses (street, city, state_province);
 CREATE INDEX idx_pay_time     ON payments (payment_time);
 
 CREATE INDEX idx_customs_declarations_tracking_no ON customs_declarations(tracking_no);

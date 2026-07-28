@@ -3,7 +3,7 @@ CREATE TABLE locations (
 );
 CREATE TABLE addresses (
     id INT PRIMARY KEY,
-    street_name VARCHAR(96) NOT NULL,
+    street VARCHAR(96) NOT NULL,
     city VARCHAR(64) NOT NULL,
     state_province VARCHAR(64) NOT NULL,
     postal_code VARCHAR(9) NOT NULL,
@@ -100,8 +100,7 @@ CREATE TABLE packages (
 -- Customs Declarations
 CREATE TABLE customs_declarations (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    tracking_no VARCHAR(32) NOT NULL,
-    UNIQUE (tracking_no),
+    tracking_no VARCHAR(32) NOT NULL UNIQUE,
     origin_country CHAR(2) NOT NULL,
     destination_country CHAR(2) NOT NULL,
     total_value DECIMAL(10,2) NOT NULL,
