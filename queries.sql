@@ -55,7 +55,7 @@ LIMIT 1;
 SELECT c.id, c.name, SUM(pay.amount) AS total_spent
 FROM packages p
 JOIN payments pay ON pay.id = p.payment_id
-JOIN customers c  ON c.id   = pay.payer_customer_id
+JOIN customers c  ON c.id   = pay.id
 WHERE p.shipped_at >= NOW() - INTERVAL 1 YEAR
 GROUP BY c.id, c.name
 ORDER BY total_spent DESC
@@ -91,7 +91,7 @@ SELECT c.name,
        SUM(pay.amount) AS amount_owed
 FROM packages p
 JOIN payments pay ON pay.id = p.payment_id
-JOIN customers c  ON c.id   = pay.payer_customer_id
+JOIN customers c  ON c.id   = pay.id
 JOIN addresses a  ON a.id   = c.address_id
 WHERE p.shipped_at >= '2026-06-01'
   AND p.shipped_at <  '2026-07-01'
@@ -107,7 +107,7 @@ SELECT c.name AS customer,
 FROM packages p
 JOIN payments pay ON pay.id = p.payment_id
 JOIN services s   ON s.id   = p.service_code
-JOIN customers c  ON c.id   = pay.payer_customer_id
+JOIN customers c  ON c.id   = pay.id
 WHERE p.shipped_at >= '2026-06-01'
   AND p.shipped_at <  '2026-07-01'
 GROUP BY c.id, c.name, s.id, s.name WITH ROLLUP;
@@ -117,7 +117,7 @@ SELECT c.name AS customer, p.tracking_no, DATE(p.shipped_at) AS shipped,
        s.name AS service, p.weight, r.name AS ship_to, pay.amount AS charge
 FROM packages p
 JOIN payments pay ON pay.id = p.payment_id
-JOIN customers c  ON c.id   = pay.payer_customer_id
+JOIN customers c  ON c.id   = pay.id
 JOIN services s   ON s.id   = p.service_code
 JOIN recipients r ON r.id   = p.recipient_id
 WHERE p.shipped_at >= '2026-06-01'
