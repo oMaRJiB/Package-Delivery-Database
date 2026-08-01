@@ -53,12 +53,21 @@ LIMIT 1;
 
 
 -- 3. Customer who spent the most on shipping this year 
+<<<<<<< HEAD
 SELECT custo.id, custo.name, SUM(pmt.amount) AS total_spent
 FROM packages  pkg
 JOIN payments  pmt   ON pmt.id   = pkg.payment_id
 JOIN customers custo ON custo.id = pkg.customer_id
 WHERE pkg.shipped_at >= NOW() - INTERVAL 1 YEAR
 GROUP BY custo.id, custo.name
+=======
+SELECT c.id, c.name, SUM(pay.amount) AS total_spent
+FROM packages p
+JOIN payments pay ON pay.id = p.payment_id
+JOIN customers c ON c.id = p.customer_id
+WHERE p.shipped_at >= NOW() - INTERVAL 1 YEAR
+GROUP BY c.id, c.name
+>>>>>>> bcfb806e92e4ad499bac8ece87bad6725914df8f
 ORDER BY total_spent DESC
 LIMIT 1;
 
@@ -86,6 +95,7 @@ ORDER BY pkg.expected_delivery_date;
 
 
 --  6. Bills for the past month 
+<<<<<<< HEAD
 SELECT custo.name,
        addr.street,
        addr.city, addr.state_province, addr.postal_code,
@@ -99,11 +109,27 @@ WHERE pkg.shipped_at >= '2026-06-01'
 GROUP BY custo.id, custo.name, addr.street,
          addr.city, addr.state_province, addr.postal_code
 ORDER BY custo.name;
+=======
+SELECT c.name,
+       a.street,
+       a.city, a.state_province, a.postal_code,
+       SUM(pay.amount) AS amount_owed
+FROM packages p
+JOIN payments pay ON pay.id = p.payment_id
+JOIN customers c ON c.id = p.customer_id
+JOIN addresses a  ON a.id   = c.address_id
+WHERE p.shipped_at >= '2026-06-01'
+  AND p.shipped_at <  '2026-07-01'
+GROUP BY c.id, c.name, a.street,
+         a.city, a.state_province, a.postal_code
+ORDER BY c.name;
+>>>>>>> bcfb806e92e4ad499bac8ece87bad6725914df8f
 
 -- 6b. Bill by type of service, with per-customer subtotals and a grand total
 SELECT custo.name AS customer,
        svc.name   AS service,
        COUNT(*)        AS shipments,
+<<<<<<< HEAD
        SUM(pmt.amount) AS charges
 FROM packages  pkg
 JOIN payments  pmt   ON pmt.id   = pkg.payment_id
@@ -124,3 +150,25 @@ JOIN recipients rcpt  ON rcpt.id  = pkg.recipient_id
 WHERE pkg.shipped_at >= '2026-06-01'
   AND pkg.shipped_at <  '2026-07-01'
 ORDER BY custo.name, pkg.shipped_at;
+=======
+       SUM(pay.amount) AS charges
+FROM packages p
+JOIN payments pay ON pay.id = p.payment_id
+JOIN services s   ON s.id   = p.service_code
+JOIN customers c ON c.id = p.customer_id
+WHERE p.shipped_at >= '2026-06-01'
+  AND p.shipped_at <  '2026-07-01'
+GROUP BY c.id, c.name, s.id, s.name WITH ROLLUP;
+
+-- 6c. Itemized bill: every shipment and its charge
+SELECT c.name AS customer, p.tracking_no, DATE(p.shipped_at) AS shipped,
+       s.name AS service, p.weight, r.name AS ship_to, pay.amount AS charge
+FROM packages p
+JOIN payments pay ON pay.id = p.payment_id
+JOIN customers c ON c.id = p.customer_id
+JOIN services s   ON s.id   = p.service_code
+JOIN recipients r ON r.id   = p.recipient_id
+WHERE p.shipped_at >= '2026-06-01'
+  AND p.shipped_at <  '2026-07-01'
+ORDER BY c.name, p.shipped_at;
+>>>>>>> bcfb806e92e4ad499bac8ece87bad6725914df8f
