@@ -1,26 +1,26 @@
 -- base view (the join logic lives here once)
 CREATE VIEW v_itemized_invoice AS
 SELECT
-    i.id AS invoice_id,
-    i.account_id,
-    c.name AS customer_name,
-    a.street, a.city, a.state_province, a.postal_code,
-    p.tracking_no,
-    s.name AS service_name,
-    s.base_cost 
-    + p.weight*s.per_kg_cost 
-    + p.is_hazard*s.hazard_surcharge
-    + p.is_intl*s.intl_surcharge AS charge_amount,
-    i.invoice_date,
-    i.due_date
-FROM invoices i
-JOIN accounts acc ON acc.id = i.account_id
-JOIN customers c ON c.id = acc.customer_id
-JOIN addresses a ON a.id = c.address_id
-JOIN account_charges ac ON ac.invoice_id = i.id
-JOIN payments pay ON pay.id = ac.payment_id
-JOIN packages p ON p.payment_id = pay.id
-JOIN services s ON s.id = p.service_code;
+    inv.id AS invoice_id,
+    inv.account_id,
+    custo.name AS customer_name,
+    addr.street, addr.city, addr.state_province, addr.postal_code,
+    pkg.tracking_no,
+    svc.name AS service_name,
+    svc.base_cost 
+    + pkg.weight*svc.per_kg_cost 
+    + pkg.is_hazard*svc.hazard_surcharge
+    + pkg.is_intl*svc.intl_surcharge AS charge_amount,
+    inv.invoice_date,
+    inv.due_date
+FROM invoices inv
+JOIN accounts acct ON acct.id = inv.account_id
+JOIN customers custo ON custo.id = acct.customer_id
+JOIN addresses addr ON addr.id = custo.address_id
+JOIN account_charges chg ON chg.invoice_id = inv.id
+JOIN payments pmt ON pmt.id = chg.payment_id
+JOIN packages pkg ON pkg.payment_id = pmt.id
+JOIN services svc ON svc.id = pkg.service_code;
 
 -- simple bill: customer, address, amount owed
 CREATE VIEW v_simple_bill AS
