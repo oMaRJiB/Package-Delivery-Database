@@ -1,4 +1,4 @@
--- base view (the join logic lives here once)
+-- base view
 CREATE VIEW v_itemized_invoice AS
 SELECT
     inv.id AS invoice_id,
@@ -22,7 +22,7 @@ JOIN payments pmt ON pmt.id = chg.payment_id
 JOIN packages pkg ON pkg.payment_id = pmt.id
 JOIN services svc ON svc.id = pkg.service_code;
 
--- simple bill: customer, address, amount owed
+-- bill: customer, address, amount owed
 CREATE VIEW v_simple_bill AS
 SELECT invoice_id, customer_name, street, city, state_province, postal_code,
        SUM(charge_amount) AS amount_owed

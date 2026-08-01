@@ -1,4 +1,4 @@
--- 1. Truck 1738 crash thing
+-- 1. Truck 1721 crash thing
 SELECT DISTINCT custo.id, custo.name, custo.email
 FROM tracking_events evt
 JOIN trucks    trk   ON trk.location_id = evt.location_id AND trk.truck_no = 1721
